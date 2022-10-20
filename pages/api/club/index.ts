@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { validateCreateClubRequest } from '../../../api/validators/createClubRequestValidator'
-import ClubService from '../../../api/services/ClubService';
+import { validateCreateClubRequest } from '../../../util/validators/createClubRequestValidator'
+import ClubService from '../../../util/services/ClubService';
 
 export default function handler(
 	req: NextApiRequest,
