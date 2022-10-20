@@ -1,31 +1,42 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { validateCreateClubRequest } from '../../../apiHelpers/validators/createClubRequestValidator'
+import ClubService from '../../../apiHelpers/services/ClubService';
 
 export default function handler(
-	req: NextApiRequest,
-	res: NextApiResponse
+  req: NextApiRequest,
+  res: NextApiResponse
 ) {
-	switch (req.method) {
-		case 'GET':
-			return list(req, res);
-		case 'POST':
-			return create(req, res);
-		default:
-			res.status(405).end(`Method ${req.method} Not Allowed`);
-	}
+  switch (req.method) {
+    case 'GET':
+      return list(req, res);
+    case 'POST':
+      return create(req, res);
+    default:
+      res.status(405).end(`Method ${req.method} Not Allowed`);
+  }
 }
 
 function list(
-	req: NextApiRequest,
-	res: NextApiResponse
+  req: NextApiRequest,
+  res: NextApiResponse
 ) {
-	res.status(200).json({ id: "01", name: "strangers" });
+  res.status(200).json({ id: "01", name: "strangers" });
 }
 
-function create(
-	req: NextApiRequest,
-	res: NextApiResponse
+async function create(
+  req: NextApiRequest,
+  res: NextApiResponse
 ) {
-	const supercell_club_id = req.body.supercell_club_id;
+  try {
+    await validateCreateClubRequest(req, res);
 
-	res.status(201).json({ ok: `Club ${supercell_club_id} created` });
+    const supercellClubId = req.body.supercellClubId;
+
+    const createClub = await ClubService.create(supercellClubId);
+
+    res.status(201).json({ id: createClub });
+  } catch (err: any) {
+    console.log(err.name, err.message);
+    return res.json({ error: err.name, message: err.message });
+  }
 }
