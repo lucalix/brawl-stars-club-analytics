@@ -1,4 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { validateCreateClubRequest } from '../../../api/validators/createClubRequestValidator'
+import ClubService from '../../../api/services/ClubService';
 
 export default function handler(
 	req: NextApiRequest,
@@ -21,11 +23,19 @@ function list(
 	res.status(200).json({ id: "01", name: "strangers" });
 }
 
-function create(
+async function create(
 	req: NextApiRequest,
 	res: NextApiResponse
 ) {
-	const supercell_club_id = req.body.supercell_club_id;
+	try {
+		await validateCreateClubRequest(req, res);
 
-	res.status(201).json({ ok: `Club ${supercell_club_id} created` });
+		const supercellClubId = req.body.supercellClubId;
+
+		const createClub = await ClubService.create(supercellClubId);
+
+		res.status(201).json({ id: createClub });
+	} catch (err: any) {
+
+	}
 }
