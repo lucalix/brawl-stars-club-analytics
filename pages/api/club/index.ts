@@ -36,6 +36,7 @@ async function create(
 
 		res.status(201).json({ id: createClub });
 	} catch (err: any) {
-
+		console.log(err.name, err.message);
+		return res.json({ error: err.name, message: err.message });
 	}
 }

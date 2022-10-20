@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { Club } from '../protocols'
+import { IClubFromSupercellApi } from '../dtos'
 import { SUPERCELL_API_BASE_URL, SUPERCELL_API_TOKEN } from '../settings'
 
 class SupercellService {
@@ -20,7 +20,7 @@ class SupercellService {
     return response;
   }
 
-  async getClub(clubTag: string): Promise<Club | undefined> {
+  async getClub(clubTag: string): Promise<IClubFromSupercellApi | undefined> {
     const encodedClubTag = encodeURIComponent(clubTag);
 
     const response = await this.requestSupercellApi({
@@ -28,7 +28,7 @@ class SupercellService {
       url: `/clubs/${encodedClubTag}`
     });
 
-    const club: Club = response.data;
+    const club: IClubFromSupercellApi = response.data;
 
     return club;
   }
