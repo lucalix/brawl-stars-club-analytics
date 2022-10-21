@@ -27,6 +27,9 @@ const clubSchema = new mongoose.Schema({
   updateAt: {
     type: Date,
     default: () => new Date()
+  },
+  syncedAt: {
+    type: Date
   }
 });
 

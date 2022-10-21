@@ -1,4 +1,4 @@
-export interface IPlayer {
+export default interface IPlayer {
   _id: string
   name: string
   iconUrl: string

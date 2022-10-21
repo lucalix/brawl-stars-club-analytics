@@ -1,21 +1,18 @@
 import supercellService from './SupercellService';
 import brawlapiService from './BrawlapiService';
 import playerService from './PlayerService'
-// import IClub from '../entities/Club';
-// import { Player } from '../entities/Player';
+import IClub from '../entities/Club';
+import IPlayer from '../entities/Player';
 import clubModel from '../models/club';
+import playerModel from '../models/player';
 
 class ClubService {
   async create(supercellClubId: string) {
-    const clubAlreadyExists = await clubModel.findById(supercellClubId);
-
-    console.log('club found: ', clubAlreadyExists);
+    const clubAlreadyExists: IClub | null = await clubModel.findById(supercellClubId);
 
     if (clubAlreadyExists) {
       throw new Error("Club already exists");
     }
-
-    console.log('Throw 1');
 
     const clubFromSupercellApi = await supercellService.getClub(supercellClubId);
 
@@ -25,12 +22,11 @@ class ClubService {
 
     const clubIconUrl: string | undefined = await brawlapiService.getClubIconUrl(clubFromSupercellApi.badgeId);
 
-    console.log('aqqq');
-
     const club = await clubModel.create({
       _id: supercellClubId,
       name: clubFromSupercellApi.name,
-      iconUrl: clubIconUrl
+      iconUrl: clubIconUrl,
+      syncedAt: new Date()
     });
 
     await playerService.registerClubMembers({
@@ -41,31 +37,35 @@ class ClubService {
     return club;
   }
 
-  // async find(): Promise<IClub[]> {
-  //   const clubList = await clubRepository.find();
+  async find(): Promise<IClub[]> {
+    const clubList: IClub[] = await clubModel.find({}).lean();
 
-  //   if (clubList.length == 0) {
-  //     return [];
-  //   }
+    if (clubList.length == 0) {
+      return [];
+    }
 
-  //   const clubIds: string[] = [];
+    const clubIds: string[] = [];
 
-  //   clubList.map((club) => {
-  //     clubIds.push(club.id);
-  //   });
+    clubList.map((club) => {
+      clubIds.push(club._id);
+    });
 
-  //   const clubMembers: Player[] = await playerRepository.find(clubIds);
+    const clubMembers: IPlayer[] = await playerModel.find({
+      'clubId': {
+        $in: clubIds
+      }
+    });
 
-  //   const formattedClubList = clubList.map((club) => {
-  //     const members = clubMembers.filter((member) => {
-  //       return member.club_id === club.id;
-  //     });
+    const formattedClubList = clubList.map((club) => {
+      const members = clubMembers.filter((member) => {
+        return member.clubId === club._id;
+      });
 
-  //     return { ...club, members };
-  //   });
+      return { ...club, members };
+    });
 
-  //   return formattedClubList;
-  // }
+    return formattedClubList;
+  }
 }
 
 export default new ClubService();
