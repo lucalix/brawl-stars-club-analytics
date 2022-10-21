@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import getMongoDbConnection from '../database/mongoConnection'
-import { IPlayer } from '../entities/Player';
+import IPlayer from '../entities/Player';
 
 getMongoDbConnection();
 

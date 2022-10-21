@@ -16,11 +16,18 @@ export default function handler(
   }
 }
 
-function list(
+async function list(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  res.status(200).json({ id: "01", name: "strangers" });
+  try {
+    const clubList = await ClubService.find();
+
+    res.status(200).json(clubList);
+  } catch (err: any) {
+    console.log(err.name, err.message);
+    return res.json({ error: err.name, message: err.message });
+  }
 }
 
 async function create(
