@@ -5,8 +5,9 @@ export default interface IClub {
   name: string
   iconUrl: string
   groupId: string
-  canceledAt: Date
-  createdAt: Date
-  updatedAt: Date
+  canceledAt?: Date
+  createdAt?: Date
+  updatedAt?: Date
+  syncedAt?: Date
   members?: IPlayer[]
 }
