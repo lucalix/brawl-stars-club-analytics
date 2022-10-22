@@ -66,6 +66,31 @@ class ClubService {
 
     return formattedClubList;
   }
+
+  async syncClub(): Promise<boolean> {
+    const club: IClub = await clubModel.findOne().sort({ syncedAt: 1 }).lean();
+    console.log('to update: ', club);
+
+    const clubFromSupercellApi = await supercellService.getClub(club._id);
+
+    if (!clubFromSupercellApi) {
+      return false;
+    }
+
+    const clubIconUrl: string | undefined = await brawlapiService.getClubIconUrl(clubFromSupercellApi.badgeId);
+
+    club.name = clubFromSupercellApi.name;
+    club.iconUrl = clubIconUrl ?? club.iconUrl;
+    club.syncedAt = new Date();
+
+    console.log('synced: ', club);
+
+    await clubModel.updateOne({ '_id': club._id }, club);
+
+    await playerService.syncClubMembers(clubFromSupercellApi);
+
+    return true;
+  }
 }
 
 export default new ClubService();
