@@ -29,10 +29,7 @@ class ClubService {
       syncedAt: new Date()
     });
 
-    await playerService.registerClubMembers({
-      members: clubFromSupercellApi.members,
-      clubId: supercellClubId
-    });
+    await playerService.registerClubMembers(clubFromSupercellApi);
 
     return club;
   }
