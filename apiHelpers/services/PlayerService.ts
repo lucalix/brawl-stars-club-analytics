@@ -7,8 +7,8 @@ import club from '../models/club';
 import IPlayer from '../entities/Player';
 
 class PlayerService {
-  async registerClubMembers(data: { members: IClubMemberFromSupercellApi[], clubId: string }): Promise<boolean | undefined> {
-    const memberIds = data.members.map(member => {
+  async registerClubMembers(clubFromSupercellApi: IClubFromSupercellApi): Promise<boolean | undefined> {
+    const memberIds = clubFromSupercellApi.members.map(member => {
       return member.tag;
     });
 
@@ -21,7 +21,7 @@ class PlayerService {
     const membersAlreadyRegisteredIds: string[] = [];
 
     membersAlreadyRegistered.map(member => {
-      membersAlreadyRegisteredIds.push(member.id);
+      membersAlreadyRegisteredIds.push(member._id);
     })
 
     if (membersAlreadyRegistered.length > 0) {
@@ -30,12 +30,12 @@ class PlayerService {
           '_id': { $in: membersAlreadyRegisteredIds }
         },
         {
-          clubId: data.clubId
+          clubId: clubFromSupercellApi.tag
         }
       )
     }
 
-    const membersNotRegistered = data.members.filter(member => {
+    const membersNotRegistered = clubFromSupercellApi.members.filter(member => {
       if (!membersAlreadyRegisteredIds.includes(member.tag)) {
         return member;
       }
@@ -47,7 +47,7 @@ class PlayerService {
       return {
         _id: member.tag,
         name: member.name,
-        clubId: data.clubId,
+        clubId: clubFromSupercellApi.tag,
         iconUrl: playerIconList[member.icon.id].imageUrl
       }
     });
@@ -58,6 +58,11 @@ class PlayerService {
   }
 
   async syncClubMembers(clubFromSupercellApi: IClubFromSupercellApi) {
+    /**
+     * To dos:
+     *  1. Criar metodos para isolar as logicas
+     *  2. Criar logica para atualizar os dados dos membros que ja estavam cadastrados
+     */
     const members: IPlayer[] = await playerModel.find({
       'clubId': {
         $in: clubFromSupercellApi.tag
