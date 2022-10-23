@@ -6,9 +6,9 @@ export default async function handler(
   res: NextApiResponse
 ) {
   try {
-    await ClubService.syncClub();
+    const response = await ClubService.syncClub();
 
-    res.send("success");
+    res.send(response);
   } catch (err: any) {
     console.log(err.name, err.message);
     return res.send("failed");

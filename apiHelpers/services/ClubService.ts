@@ -64,14 +64,14 @@ class ClubService {
     return formattedClubList;
   }
 
-  async syncClub(): Promise<boolean> {
+  async syncClub(): Promise<string> {
     const club: IClub = await clubModel.findOne().sort({ syncedAt: 1 }).lean();
     console.log('to update: ', club);
 
     const clubFromSupercellApi = await supercellService.getClub(club._id);
 
     if (!clubFromSupercellApi) {
-      return false;
+      return "Club not found";
     }
 
     const clubIconUrl: string | undefined = await brawlapiService.getClubIconUrl(clubFromSupercellApi.badgeId);
@@ -86,7 +86,7 @@ class ClubService {
 
     await playerService.syncClubMembers(clubFromSupercellApi);
 
-    return true;
+    return club.name;
   }
 }
 
