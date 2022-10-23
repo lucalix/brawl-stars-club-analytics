@@ -5,5 +5,6 @@ export default interface IPlayer {
   createdAt?: Date
   canceledAt?: Date
   updatedAt?: Date
+  syncedAt?: Date
   clubId?: string
 }
