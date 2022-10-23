@@ -32,5 +32,16 @@ class SupercellService {
 
     return club;
   }
+
+  async getPlayerMatches(playerTag: string) {
+    const encodedPlayerTag = encodeURIComponent(playerTag);
+
+    const response = await this.requestSupercellApi({
+      method: 'GET',
+      url: `/players/${encodedPlayerTag}/battlelog`
+    });
+
+    return response.data;
+  }
 }
 export default new SupercellService();
