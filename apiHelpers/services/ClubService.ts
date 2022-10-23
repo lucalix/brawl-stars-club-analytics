@@ -66,7 +66,7 @@ class ClubService {
 
   async syncClub(): Promise<string> {
     const club: IClub = await clubModel.findOne().sort({ syncedAt: 1 }).lean();
-    console.log('to update: ', club);
+    console.log('Club to sync: ', club);
 
     const clubFromSupercellApi = await supercellService.getClub(club._id);
 
@@ -80,7 +80,7 @@ class ClubService {
     club.iconUrl = clubIconUrl ?? club.iconUrl;
     club.syncedAt = new Date();
 
-    console.log('synced: ', club);
+    console.log('Club synced: ', club);
 
     await clubModel.updateOne({ '_id': club._id }, club);
 
