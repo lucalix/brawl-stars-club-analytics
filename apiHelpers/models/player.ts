@@ -22,15 +22,12 @@ const playerSchema = new mongoose.Schema({
     ref: 'Club'
   },
   canceledAt: Date,
-  createdAt: {
-    type: Date,
-    default: () => new Date(),
-    immutable: true
-  },
-  updateAt: {
+  syncedAt: {
     type: Date,
     default: () => new Date()
   }
-});
+},
+  { timestamps: true }
+);
 
 export default mongoose.models.Player || mongoose.model<IPlayer>("Player", playerSchema);
