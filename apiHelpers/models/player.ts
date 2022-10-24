@@ -4,29 +4,30 @@ import IPlayer from '../entities/Player';
 
 getMongoDbConnection();
 
-const playerSchema = new mongoose.Schema({
-  _id: {
-    type: String,
-    immutable: true
+const playerSchema = new mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      immutable: true
+    },
+    name: {
+      type: String,
+      required: true
+    },
+    iconUrl: {
+      type: String,
+      required: true
+    },
+    clubId: {
+      type: String,
+      ref: 'Club'
+    },
+    canceledAt: Date,
+    syncedAt: {
+      type: Date,
+      default: () => new Date()
+    }
   },
-  name: {
-    type: String,
-    required: true
-  },
-  iconUrl: {
-    type: String,
-    required: true
-  },
-  clubId: {
-    type: String,
-    ref: 'Club'
-  },
-  canceledAt: Date,
-  syncedAt: {
-    type: Date,
-    default: () => new Date()
-  }
-},
   { timestamps: true }
 );
 
