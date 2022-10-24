@@ -1,12 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import MatchService from '../../../apiHelpers/services/MatchService';
+import BattleService from '../../../apiHelpers/services/BattleService';
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   try {
-    const response = await MatchService.syncMatches();
+    const response = await BattleService.syncBattles();
 
     res.json(response);
   } catch (err: any) {

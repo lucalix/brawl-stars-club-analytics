@@ -2,16 +2,16 @@ import playerModel from '../models/player';
 import SupercellService from './SupercellService';
 import IPlayer from '../entities/Player';
 
-class MatchService {
-  async syncMatches(): Promise<object[]> {
+class BattleService {
+  async syncBattles(): Promise<object[]> {
     const players: IPlayer[] = await playerModel.find().sort({ syncedAt: 1 }).limit(5).lean();
 
     const response: object[] = [];
 
     for (const player of players) {
-      const matches = await SupercellService.getPlayerMatches(player._id);
-      console.log(matches.items.length);
-      response.push({ player, matches });
+      const battles = await SupercellService.getPlayerMatches(player._id);
+      console.log(battles.items.length);
+      response.push({ player, battles });
     }
 
     return response;
@@ -19,4 +19,4 @@ class MatchService {
   }
 }
 
-export default new MatchService();
+export default new BattleService();
