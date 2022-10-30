@@ -122,8 +122,7 @@ class BattleService {
           }
         }
 
-        let createBattlePromise = battleModel.create(createBattleObject)
-        createBattlesPromises.push(createBattlePromise);
+        createBattlesPromises.push(battleModel.create(createBattleObject));
       }
     }
 
