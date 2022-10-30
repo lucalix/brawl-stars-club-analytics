@@ -133,8 +133,9 @@ class BattleService {
   discoverAndSetRankedMode(battleGroups: any[]) {
     const processedBattleGroups = battleGroups.map(group => {
       const mainBattle = group.find((battle: { isMainBattle: boolean; }) => battle.isMainBattle);
-      const isPowerLeague: boolean = mainBattle.battle.trophyChange ? false : true;
-      const isClubLeague: boolean = mainBattle.battle.trophyChange ? true : false;
+
+      const isPowerLeague: boolean = mainBattle?.battle?.trophyChange ? false : true;
+      const isClubLeague: boolean = mainBattle?.battle?.trophyChange ? true : false;
 
       const groupBattles = group.map((battle: any) => {
         return {
