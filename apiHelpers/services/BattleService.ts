@@ -9,8 +9,6 @@ class BattleService {
   async syncBattles() {
     const players: IPlayer[] = await playerModel.find({ clubId: { $ne: null } }).sort({ battlesSyncedAt: 1 }).limit(15).lean();
 
-    let response: any = [];
-
     for (const player of players) {
       const lastBattles: IBattleFromSupercellApi = await SupercellService.getPlayerMatches(player._id);
 
@@ -21,25 +19,22 @@ class BattleService {
       const alreadyRegisteredBattlesIds = alreadyRegisteredBattles.map(battle => battle._id);
 
       const notRegisteredBattles = battles.filter(battle => !alreadyRegisteredBattlesIds.includes(battle.battleTime));
-      response.push(notRegisteredBattles);
 
       const battleGroups = this.discoverAndSetBattleGroups(notRegisteredBattles);
 
-      response.push(battleGroups);
+      const battleGroupsFormatted = this.discoverAndSetRankedMode(battleGroups);
 
-      if (battleGroups.length > 0) {
-        await this.createBattles(battleGroups);
+      if (battleGroupsFormatted.length > 0) {
+        await this.createBattles(battleGroupsFormatted);
       }
       await playerModel.updateOne({ _id: player._id }, { battlesSyncedAt: new Date() });
       console.log('Player: ', player.name, player._id);
       console.log('Batalhas registradas: ', notRegisteredBattles.length);
-      console.log('Groupos de batalhas registrados: ', battleGroups.length);
-      console.log('----');
+      console.log('Groupos de batalhas registrados: ', battleGroupsFormatted.length);
       console.log('----');
     }
 
     console.log('FINALIZOU');
-    console.log('----');
     console.log('----');
 
     return true;
@@ -55,8 +50,6 @@ class BattleService {
     let groups: any[] = [];
 
     let notGroupedBattles = [...battles];
-
-    let count = 0;
 
     while (notGroupedBattles.length > 0) {
       let battleInFirstPosition = notGroupedBattles[0];
@@ -95,7 +88,6 @@ class BattleService {
       groups.push(formattedBattleGroup);
 
       notGroupedBattles = notGroupedBattles.filter(battle => !processedBattleIds.includes(battle.battleTime));
-      count++;
     }
 
     return groups;
@@ -110,13 +102,19 @@ class BattleService {
         let createBattleObject: any = {
           _id: battle.battleTime,
           groupId: battle.groupId,
+          isClubLeague: battle.isClubLeague,
+          isPowerLeague: battle.isPowerLeague,
           isMainBattle: battle.isMainBattle,
           event: battle.event,
           battle: {
             ...battle.battle,
-            starPlayer: {
-              tag: battle.battle.starPlayer?.tag || null
-            },
+            starPlayer: battle.battle.starPlayer?.tag
+              ?
+              {
+                tag: battle.battle.starPlayer.tag
+              }
+              :
+              null,
             teams: {
               teamOne: [...battle.battle.teams[0]],
               teamTwo: [...battle.battle.teams[1]]
@@ -130,6 +128,26 @@ class BattleService {
     }
 
     await Promise.all(createBattlesPromises);
+  }
+
+  discoverAndSetRankedMode(battleGroups: any[]) {
+    const processedBattleGroups = battleGroups.map(group => {
+      const mainBattle = group.find((battle: { isMainBattle: boolean; }) => battle.isMainBattle);
+      const isPowerLeague: boolean = mainBattle.battle.trophyChange ? false : true;
+      const isClubLeague: boolean = mainBattle.battle.trophyChange ? true : false;
+
+      const groupBattles = group.map((battle: any) => {
+        return {
+          ...battle,
+          isClubLeague,
+          isPowerLeague
+        }
+      });
+
+      return groupBattles;
+    })
+
+    return processedBattleGroups;
   }
 }
 

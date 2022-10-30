@@ -10,6 +10,8 @@ const battleSchema = new mongoose.Schema(
       immutable: true
     },
     groupId: String,
+    isClubLeague: Boolean,
+    isPowerLeague: Boolean,
     isMainBattle: Boolean,
     event: {
       id: Number,
