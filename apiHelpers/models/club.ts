@@ -21,7 +21,8 @@ const clubSchema = new mongoose.Schema(
     groupId: String,
     canceledAt: Date,
     syncedAt: {
-      type: Date
+      type: Date,
+      default: () => new Date()
     }
   },
   { timestamps: true }

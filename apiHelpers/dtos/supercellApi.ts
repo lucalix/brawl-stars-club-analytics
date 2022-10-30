@@ -20,11 +20,11 @@ export interface IClubMemberFromSupercellApi {
   }
 }
 
-export interface IMatchesFromSupercellApi {
-  items: IMatchItemFromSupercellApi[]
+export interface IBattleFromSupercellApi {
+  items: IBattleItemFromSupercellApi[]
 }
 
-export interface IMatchItemFromSupercellApi {
+export interface IBattleItemFromSupercellApi {
   battleTime: string
   event: {
     id: number
@@ -37,12 +37,12 @@ export interface IMatchItemFromSupercellApi {
     result: "victory" | "defeat" | "draw"
     duration: number
     trophyChange: number
-    starPlayer: IMatchPlayerFromSupercellApi,
-    teams: IMatchPlayerFromSupercellApi[][]
+    starPlayer: IBattlePlayerFromSupercellApi,
+    teams: IBattlePlayerFromSupercellApi[][]
   }
 }
 
-export interface IMatchPlayerFromSupercellApi {
+export interface IBattlePlayerFromSupercellApi {
   tag: string
   name: string
   brawler: {

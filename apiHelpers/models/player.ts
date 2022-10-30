@@ -23,7 +23,7 @@ const playerSchema = new mongoose.Schema(
       ref: 'Club'
     },
     canceledAt: Date,
-    syncedAt: {
+    battlesSyncedAt: {
       type: Date,
       default: () => new Date()
     }
